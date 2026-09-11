@@ -60,7 +60,7 @@ class MIParser:
             end = ']' if c == '[' else '}'
             result = [] if c == '[' else {}
             while self.i < len(s) and s[self.i] != end:
-                named = s[self.i] not in '"[{' 
+                named = s[self.i] not in '"[{'
                 if named:
                     key, val = self.pair()
                     if isinstance(result, dict):
