@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Apollo Command Module: deterministic software forensics and validation for human and AI-assisted engineering.">
+  <title>Apollo Command Module</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <header class="nav">
+    <a class="brand" href="./">APOLLO <span>COMMAND MODULE</span></a>
+    <nav>
+      <a href="#workflow">Workflow</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#case-study">Case study</a>
+      <a href="https://github.com/GoldenMark64/apollo-command-module">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">DETERMINISTIC SOFTWARE FORENSICS</div>
+      <h1>Give reasoning systems<br><em>facts worth reasoning from.</em></h1>
+      <p class="lede">
+        Apollo Command Module separates mechanical evidence gathering from engineering judgment.
+        Python and conventional debugging tools establish bounded, reproducible facts; humans and
+        AI systems can spend their attention on interpretation, hypotheses, and decisions.
+      </p>
+      <div class="actions">
+        <a class="primary" href="https://github.com/GoldenMark64/apollo-command-module/blob/main/docs/quickstart.md">Quick start</a>
+        <a class="secondary" href="https://github.com/GoldenMark64/apollo-command-module">View source</a>
+      </div>
+
+      <div class="terminal" role="region" aria-label="Apollo capture example">
+        <div class="terminal-bar"><span></span><span></span><span></span><b>session capture</b></div>
+        <pre><code>$ python3 apollo.py session capture \
+    --application example-application \
+    --executable /opt/example/bin/application \
+    --output ./apollo-session-001
+
+# reproduce the behavior, then verify offline:
+$ python3 apollo.py session verify --session ./apollo-session-001</code></pre>
+      </div>
+    </section>
+
+    <section class="manifesto">
+      <p>Hashes. Source state. Runtime traces. Build results. Crash state. Artifact provenance.</p>
+      <strong>Let deterministic tools establish the facts once.</strong>
+    </section>
+
+    <section id="workflow" class="section">
+      <div class="section-kicker">THE WORKFLOW</div>
+      <h2>Capture once. Inspect repeatedly.</h2>
+      <div class="steps">
+        <article><span>01</span><h3>Authorize</h3><p>Define exactly which application Apollo may launch on the current machine.</p></article>
+        <article><span>02</span><h3>Capture</h3><p>Run the application under bounded session supervision and reproduce the behavior.</p></article>
+        <article><span>03</span><h3>Preserve</h3><p>Record provenance, lifecycle state, runtime output, debugger state, and crash evidence when applicable.</p></article>
+        <article><span>04</span><h3>Verify</h3><p>Check bundle structure, hashes, sizes, semantics, and consistency without rerunning the application.</p></article>
+      </div>
+    </section>
+
+    <section id="capabilities" class="section grid-section">
+      <div>
+        <div class="section-kicker">CAPABILITIES</div>
+        <h2>A small command layer for reproducible engineering.</h2>
+      </div>
+      <div class="cards">
+        <article><h3>Session capture</h3><p>Supervise an authorized Linux application while retaining bounded runtime and debugger evidence.</p></article>
+        <article><h3>Crash evidence</h3><p>Automatically collect bounded fatal-signal, thread, stack, register, module, and disassembly evidence.</p></article>
+        <article><h3>Offline verification</h3><p>Verify an existing session bundle without launching the captured application again.</p></article>
+        <article><h3>Source & trace facts</h3><p>Extract source regions, cross-reference text, compare structured traces, inspect patches, and run bounded probes.</p></article>
+      </div>
+    </section>
+
+    <section id="case-study" class="section case-study">
+      <div class="section-kicker">FIELD CASE STUDY</div>
+      <h2>A bug that looked like dead input was actually a stuck synchronization state.</h2>
+      <p>
+        During a native Linux GoldenEye investigation, rendering and polling continued while fresh
+        controller reads stopped. Apollo-backed runtime checkpoints narrowed the failure to a lost
+        enable request and a poll-disable depth that never returned to zero.
+      </p>
+      <a href="https://github.com/GoldenMark64/apollo-command-module/blob/main/docs/case-study-apollo-009.md">Read the sanitized case study →</a>
+    </section>
+
+    <section class="section principles">
+      <div class="section-kicker">DESIGN PRINCIPLES</div>
+      <div class="principle-grid">
+        <div><b>Deterministic first</b><span>Prefer inspectable facts over narrative claims.</span></div>
+        <div><b>Bounded capture</b><span>Avoid unrestricted dumps and unbounded diagnostic output.</span></div>
+        <div><b>Explicit provenance</b><span>Record executable identity and session metadata instead of guessing.</span></div>
+        <div><b>AI independent</b><span>Evidence should remain useful no matter which reasoning system consumes it.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>Apollo Command Module</strong><br>Linux-first · GPL-3.0-only</div>
+    <div class="footer-links">
+      <a href="https://github.com/GoldenMark64/apollo-command-module/blob/main/SECURITY.md">Security</a>
+      <a href="https://github.com/GoldenMark64/apollo-command-module/blob/main/CONTRIBUTING.md">Contributing</a>
+      <a href="https://github.com/GoldenMark64/apollo-command-module">GitHub</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+config/application-profiles.json
+apollo-session-*/
+core
+core.*
+*.core
+*.dmp
+*.mdmp

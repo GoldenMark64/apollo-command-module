@@ -1,0 +1,16 @@
+{
+  "profiles": [
+    {
+      "hostname": "workstation-a",
+      "identity": "example-application",
+      "executable": "/opt/example/bin/application",
+      "cwd": "/opt/example",
+      "env_allowlist": [
+        "EXAMPLE_TRACE"
+      ]
+    }
+  ],
+  "forbidden_paths": [
+    "/srv/apollo-private"
+  ]
+}
