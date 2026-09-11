@@ -35,21 +35,25 @@ possibilities into observable state.
 
 ## Decisive evidence
 
-A failing capture exposed the controller-poll queue transition:
+A current-main instrumented Dam flight captured the exact failure schedule:
 
 ```text
-queue-send kind=ENABLE_REQ rc=-1 before=1 after=1 cap=1 depth=1
-poll ... DISABLE_REQUEST ... depth=1->2
-poll ... ENABLE_REQUEST ... depth=2->1
-poll ... EARLY_RETURN_DISABLED ... depth=1->1
+event=MISSION_SAVE_END
+poll=6558 branch=DISABLE_REQUEST depth=1 ... gap_polls=1
+event=STATUS_BEGIN eligible_gap_polls=1 depth=1 dq=0/1 eq=1/1
+queue-send kind=DISABLE_REQ rc=0 ...
+queue-send kind=ENABLE_REQ rc=-1 ...
+poll=6559 branch=DISABLE_REQUEST depth=2 ...
+poll=6560 branch=ENABLE_REQUEST depth=1 ...
+poll=6561 branch=EARLY_RETURN_DISABLED depth=1 dq=0/1 eq=0/1 reads=6547
+...
+poll=6600 branch=HEARTBEAT depth=1 dq=0/1 eq=0/1 reads=6547
 ```
 
-Subsequent checkpoints showed frames and polling continuing while controller-read
-counts remained frozen.
+The application had not hung. Rendering and polling continued, but the
+controller-read count remained frozen.
 
-The application had not hung.
-
-The controller polling state had.
+The controller polling state had become permanently disabled.
 
 ## Root cause
 
@@ -59,37 +63,75 @@ handshake inherited from the original architecture.
 That design assumes separately scheduled polling behavior and blocking message
 queue semantics.
 
-The native implementation performs the relevant work synchronously. A one-slot
-queue could therefore reject an enable request while callers continued without
-handling the failed send.
+The native implementation performs the relevant work synchronously. During
+mission completion, the save path can queue DISABLE and ENABLE requests. If
+exactly one eligible `joyPoll()` runs before the following status handshake,
+the save DISABLE is consumed while the save ENABLE remains in its one-slot
+queue.
 
-The resulting sequence left the native poll-disable depth permanently nonzero.
+The subsequent status DISABLE can then be queued successfully, but the status
+ENABLE collides with the still-pending ENABLE and is dropped. The failed send
+is ignored.
 
-Future polls returned before controller input was read.
+Later polls consume the second DISABLE and the one surviving ENABLE. That leaves
+poll-disable depth at 1 with both request queues empty. No future request can
+bring the depth back to zero, so every later `joyPoll()` exits before reading
+controller input.
+
+## Deterministic regression
+
+A ROM-free regression was built around the actual production `joy.c` functions
+and native message-queue implementation, with synthetic controller and save
+adapters.
+
+The unchanged current production logic reproduced the dangerous one-poll-gap
+schedule deterministically:
+
+- the status ENABLE was the only dropped request
+- disable depth remained 1
+- both request queues drained to empty
+- subsequent eligible polls produced no fresh controller reads
+
+The same harness also demonstrated the balanced zero-poll-gap schedule, where
+both status requests collide symmetrically and polling returns to depth zero.
 
 ## Repair
 
-The repair removed the unnecessary asynchronous handshake from the native path:
+The repair removes the unnecessary asynchronous handshake from the native path:
 
-- native status checking is performed directly
-- native poll-disable and poll-enable wrappers no longer enqueue the legacy
-  synchronization requests
+- native `joyCheckStatusThreadSafe()` calls `joyCheckStatus()` directly
+- native `joyDisablePoll()` is a no-op
+- native `joyEnablePoll()` is a no-op
 - non-native behavior remains unchanged
 
 The change is intentionally scoped to the native implementation.
 
-## Verification
+## Final verification
 
-The repaired candidate was checked through multiple layers:
+The repaired candidate was checked through multiple independent layers:
 
-- the port regression suite passed
-- the complete build passed
-- a headless run showed controller reads continuing with disable depth zero
-- an Apollo session capture completed normally
-- a human gameplay test successfully advanced into the next stage
+- the current unpatched production functions reproduced the dangerous schedule
+  in the ROM-free regression
+- the repaired native build kept polling depth at zero in both zero-gap and
+  one-poll-gap schedules
+- the non-native build continued exercising the original queue branches
+- the exact decomp baseline accepted the complete source patch queue through
+  patch 0031
+- the complete Linux build succeeded
+- an unpatched human Dam flight reproduced the post-mission input lock
+- Apollo instrumentation measured `eligible_gap_polls=1` in that failing flight
+- the same current baseline with the production repair completed Dam normally
+- mouse and keyboard input remained functional after mission completion
 
-The final Apollo capture therefore complemented, rather than replaced, ordinary
-tests and human validation.
+The final human A/B therefore confirmed that the production repair fixes the
+real gameplay failure, not just the synthetic schedule.
+
+## Public upstream tracking
+
+The current upstream report and fix are tracked as:
+
+- GoldenEye Native issue #88: post-mission input freeze after mission save
+- GoldenEye Native pull request #89: native joy polling repair
 
 ## Why Apollo helped
 
@@ -104,10 +146,12 @@ The investigation moved from:
 
 to:
 
-> rendering and polling continue, controller reads stop, and the native
-> poll-disable depth remains permanently nonzero after a failed queue send
+> one eligible poll occurs between mission save and status; the second ENABLE
+> send is dropped; disable depth settles at 1 with empty queues; controller
+> reads stop while rendering continues
 
-That is a much smaller engineering problem.
+That is a much smaller engineering problem, and one that could be reproduced in
+a ROM-free deterministic harness before the production repair was accepted.
 
 ## Privacy
 
