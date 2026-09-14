@@ -17,6 +17,7 @@ import platform
 from pathlib import Path
 
 from apollo_policy import is_forbidden_path
+from apollo_source import analyze_c_function
 
 SCHEMA = "apollo.evidence.v1"
 
@@ -180,6 +181,25 @@ def source_xref(args):
     out = {"matches": matches, "count": len(matches)}
     return envelope("source.xref", {"root": os.path.normpath(os.fspath(root)), "pattern": args.pattern}, out)
 
+
+
+def source_function(args):
+    path = safe_path(args.file)
+    text = read_text(path)
+    out = analyze_c_function(text, args.symbol, args.variable, args.max_lines, args.max_bytes)
+    out["file"] = os.path.normpath(os.fspath(path))
+    out["file_sha256"] = sha256(text.encode("utf-8"))
+    return envelope(
+        "source.function",
+        {
+            "file": out["file"],
+            "symbol": args.symbol,
+            "variables": sorted(set(args.variable or [])),
+            "max_lines": args.max_lines,
+            "max_bytes": args.max_bytes,
+        },
+        out,
+    )
 
 KV = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)=([^\s]+)")
 
@@ -401,6 +421,11 @@ def parser():
     xr = ss.add_parser("xref", help="find sorted source references")
     xr.add_argument("--root", required=True); xr.add_argument("--pattern", required=True); xr.add_argument("--regex", action="store_true"); xr.add_argument("--glob")
     xr.set_defaults(func=source_xref)
+    fn = ss.add_parser("function", help="extract bounded lexical evidence for one C function")
+    fn.add_argument("--file", required=True); fn.add_argument("--symbol", required=True)
+    fn.add_argument("--variable", action="append", default=[])
+    fn.add_argument("--max-lines", type=int, default=500); fn.add_argument("--max-bytes", type=int, default=131072)
+    fn.set_defaults(func=source_function)
     trace = sub.add_parser("trace", help="compare structured key/value traces")
     ts = trace.add_subparsers(dest="action", required=True)
     tc = ts.add_parser("compare", help="group observed/reference deltas")
