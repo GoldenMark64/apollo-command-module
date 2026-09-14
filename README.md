@@ -61,6 +61,11 @@ Apollo favors deterministic, bounded, machine-readable evidence.
 
 It records provenance such as executable hashes and session metadata, keeps missing information explicitly missing rather than guessing, and separates internal verification from decisions about whether an artifact is safe to share.
 
+## Case studies
+
+- [GoldenEye CAST crash — multi-AI debugging architecture](docs/case-study-cast-crash-multi-ai.md) — Apollo supplied deterministic evidence while Qwen3-Coder 30B, OpenCode, Codex, and two Linux machines divided the investigation, validation, and production-hardening work. The complete bug hunt and fix used less than 20% of the weekly Codex allowance.
+- [APOLLO-009 — GoldenEye Native post-mission input lock](docs/case-study-apollo-009.md) — deterministic runtime evidence narrowed an apparent input failure to a stuck controller-poll synchronization state.
+
 ## Documentation
 
 Start with:
@@ -72,7 +77,8 @@ Start with:
 - [Session capture](docs/session-capture.md)
 - [Crash capture](docs/crash-capture.md)
 - [Offline verification](docs/bundle-verification.md)
-- [GoldenEye Native case study](docs/case-study-apollo-009.md)
+- [CAST crash multi-AI case study](docs/case-study-cast-crash-multi-ai.md)
+- [APOLLO-009 GoldenEye Native case study](docs/case-study-apollo-009.md)
 
 ## Platform status
 
