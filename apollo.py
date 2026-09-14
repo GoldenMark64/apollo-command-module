@@ -19,6 +19,7 @@ from pathlib import Path
 from apollo_policy import is_forbidden_path
 from apollo_source import analyze_c_function
 
+VERSION = "0.91.0"
 SCHEMA = "apollo.evidence.v1"
 
 
@@ -409,6 +410,7 @@ def patch_check(args):
 
 def parser():
     p = argparse.ArgumentParser(prog="apollo", description=__doc__)
+    p.add_argument("--version", action="version", version=f"Apollo Command Module {VERSION}")
     p.add_argument("--json", action="store_true", help="emit the full structured evidence envelope")
     sub = p.add_subparsers(dest="group", required=True)
     from apollo_session import add_cli as add_session_cli
