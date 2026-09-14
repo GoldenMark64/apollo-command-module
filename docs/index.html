@@ -14,7 +14,7 @@
     <nav>
       <a href="#workflow">Workflow</a>
       <a href="#capabilities">Capabilities</a>
-      <a href="#case-study">Case study</a>
+      <a href="#case-study">Case studies</a>
       <a href="https://github.com/GoldenMark64/apollo-command-module">GitHub</a>
     </nav>
   </header>
@@ -75,14 +75,24 @@ $ python3 apollo.py session verify --session ./apollo-session-001</code></pre>
     </section>
 
     <section id="case-study" class="section case-study">
-      <div class="section-kicker">FIELD CASE STUDY</div>
-      <h2>A bug that looked like dead input was actually a stuck synchronization state.</h2>
+      <div class="section-kicker">FIELD CASE STUDIES</div>
+      <h2>From deterministic evidence to upstream fixes.</h2>
       <p>
-        During a native Linux GoldenEye investigation, rendering and polling continued while fresh
-        controller reads stopped. Apollo-backed runtime checkpoints narrowed the failure to a lost
-        enable request and a poll-disable depth that never returned to zero.
+        Apollo has been used in real GoldenEye Native investigations to reduce ambiguous failures to
+        precise engineering facts that local and cloud reasoning systems could act on.
       </p>
-      <a href="https://github.com/GoldenMark64/apollo-command-module/blob/main/docs/case-study-apollo-009.md">Read the sanitized case study →</a>
+      <p>
+        <strong>CAST crash / multi-AI workflow:</strong> Apollo measured native model-slot exhaustion,
+        helped reject an incomplete ownership-only repair, and supported a production fix validated
+        through regression tests, full builds, a 180-second runtime flight, and a second-machine smoke test.
+        The complete bug hunt and fix used less than 20% of the weekly Codex allowance.
+      </p>
+      <p><a href="https://github.com/GoldenMark64/apollo-command-module/blob/main/docs/case-study-cast-crash-multi-ai.md">Read the CAST crash multi-AI case study →</a></p>
+      <p>
+        <strong>APOLLO-009 post-mission input lock:</strong> runtime checkpoints narrowed an apparent
+        input failure to a lost enable request and a poll-disable depth that never returned to zero.
+      </p>
+      <p><a href="https://github.com/GoldenMark64/apollo-command-module/blob/main/docs/case-study-apollo-009.md">Read the APOLLO-009 case study →</a></p>
     </section>
 
     <section class="section principles">
