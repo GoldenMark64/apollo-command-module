@@ -2,9 +2,33 @@
 
 All notable public changes to Apollo Command Module will be documented here.
 
-Apollo is currently under active development and has not yet reached a stable 1.0 release.
+Apollo is under active development and has not yet reached a stable 1.0 release.
 
 ## Unreleased
+
+## 0.91.0 - 2026-09-14
+
+### Added
+
+- `apollo --version`, reporting `Apollo Command Module 0.91.0`
+- `source function`, a bounded lexical C-function evidence operation
+- exact function source, line bounds, function/file hashes, simple identifier
+  assignments, return evidence, and recognized enclosing braced controls
+- optional assignment filtering with `--variable`
+- ambiguity rejection and explicit lexical-analysis limitations
+- focused source-function and version regression tests
+- GoldenEye CAST crash multi-AI case study
+
+### Validation
+
+- source-function focused tests: 5/5 passed
+- version CLI test: passed
+- `source function` was used during the GoldenEye CAST crash investigation
+  before release
+
+## 0.90.0 - 2026-09-11
+
+Initial public Apollo Command Module release.
 
 ### Added
 

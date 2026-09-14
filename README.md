@@ -41,6 +41,34 @@ The current implementation is Linux-first and has been validated during developm
 
 Windows support is planned but is currently unvalidated.
 
+## Version and CLI
+
+Current development release: **Apollo 0.91.0**.
+
+```bash
+python3 apollo.py --version
+# Apollo Command Module 0.91.0
+```
+
+Apollo 0.91 adds bounded lexical evidence for a named C function:
+
+```bash
+python3 apollo.py --json source function \
+  --file path/to/source.c \
+  --symbol example_function \
+  --variable model
+```
+
+`source function` reports the exact function source and line range, hashes,
+simple identifier assignments, return statements, and recognized enclosing
+braced controls. `--variable` may be repeated to restrict assignment evidence
+to specific identifiers.
+
+The operation is intentionally conservative: it performs lexical C analysis,
+not preprocessing or type resolution. Ambiguous definitions are rejected, and
+absence of a reported fact is not treated as proof that no semantic path
+exists.
+
 ## Design goals
 
 Apollo favors:
